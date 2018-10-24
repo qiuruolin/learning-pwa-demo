@@ -65,3 +65,16 @@ self.addEventListener('fetch', function(e){
       }))
     }
 })
+
+// 监听push事件 => 在浏览器中获取推送信息
+self.addEventListener('push', function(e){
+  var data = e.data
+  if(data){
+    data = data.json()
+    console.log('push的数据：', data)
+    self.registration.showNotification(data.text)
+  }
+  else{
+    console.log('push没有任何数据')
+  }
+})

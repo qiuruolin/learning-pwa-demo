@@ -130,11 +130,11 @@
     });
 
     // 注册serviceWorker
-    if('serviceWorker' in navigator){
-        navigator.serviceWorker.register('./sw.js').then(function(){
-            console.log('[ServiceWorker] 注册成功')
-        })
-    }
+    // if('serviceWorker' in navigator){
+    //     navigator.serviceWorker.register('./sw.js').then(function(){
+    //         console.log('[ServiceWorker] 注册成功')
+    //     })
+    // }
 
     //读取缓存数据
     function getApiDataFromCache(url){
@@ -176,5 +176,81 @@
         xhr.open('GET', url, true);
         xhr.send(null);
         })
+    }
+
+    //push&&notification 推送消息
+
+    // 浏览器订阅
+    // 当我们注册完Service Worker后会得到一个Registration对象，通过调用Registration对象的registration.pushManager.subscribe()方法可以发起订阅
+    function registerServiceWorker(file){
+        return navigator.serviceWorker.register(file)
+    }
+    // 发起订阅
+    function subscribeUserToPush(registration, publicKey){
+        var subscribeOptions = {
+            userVisibleOnly: true, //推送时是否会有消息提醒
+            applicationServerKey: window.urlBase64ToUint8Array(publicKey) //客户端公钥
+        }
+        return registration.pushManager.subscribe(subscribeOptions).then(function(pushSubscription){
+            console.log('Received PushSubscription: ', JSON.stringify(pushSubscription))
+            return pushSubscription
+        })
+    }
+    //将pushSubscription信息发送给后端
+    function sendSubscriptionToServer(body, url) {
+        url = url || '/subscription';
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.timeout = 60000;
+            xhr.onreadystatechange = function () {
+                var response = {};
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    try {
+                        response = JSON.parse(xhr.responseText);
+                    }
+                    catch (e) {
+                        response = xhr.responseText;
+                    }
+                    resolve(response);
+                }
+                else if (xhr.readyState === 4) {
+                    resolve();
+                }
+            };
+            xhr.onabort = reject;
+            xhr.onerror = reject;
+            xhr.ontimeout = reject;
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(body);
+        });
+    }
+
+    /**
+     * 生成一个用不重复的ID
+     */
+    function GenNonDuplicateID(randomLength){
+      return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
+    }
+
+    if('serviceWorker' in navigator && 'PushManager' in window){
+      // 可通过web-push generate-vapid-keys生成公钥和私钥
+      var publicKey = 'BNw-bOf8E1JKr2EQtCI_tki2pyeuufvG0M-z2VnfvYy4S0ZavjDNfayxCBQQjWnd05ynd8KS1C6qLTJNxy3V6mQ'
+
+      registerServiceWorker('./sw.js').then(function(registration){
+        console.log('[ServerWorker] 注册成功')
+        // 开启该客户端的消息推送订阅功能
+        return subscribeUserToPush(registration, publicKey)
+      }).then(function(subscription){
+        const body = {subscription: subscription}
+        body.uniqueid = GenNonDuplicateID()
+        console.log('uniqueid', body.uniqueid)
+        // 将生成的客户端订阅信息存储在自己的服务器上
+        return sendSubscriptionToServer(JSON.stringify(body))
+      }).then(function(res){
+        console.log(res)
+      }).catch(function(err){
+        console.log(err)
+      })
     }
 })();
