@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="./style.css">
+
+    <!-- 使用manifest文件 -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- ios, safaris相关设置，代替manifest -->
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- 类似于manifest中display的功能，yes可进入standalone模式-->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default"> <!-- 状态栏样式，只在standalone模式中有效-->
+    <meta name="apple-mobile-web-app-title" content="图书搜索">
+    <link rel="apple-touch-icon" href="img/icons//book-256.png">
+
+    <!-- ie, edge中的相关设置 -->
+    <meta name="application-name" content="图书搜索">
+    <meta name="ms-application-TileColor" content="#222">
+    <meta name="msapplication-square70x70logo" content="img/icons/book-72.png" />
+    <meta name="msapplication-square150x150logo" content="img/icons/book-144.png" />
+    <meta name="msapplication-square310x310logo" content="img/icons/book-256.png" />
+
     <title>PWA: 图书搜索</title>
 </head>
 <body>

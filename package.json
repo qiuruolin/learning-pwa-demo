@@ -17,23 +17,18 @@
     "koa",
     "sample"
   ],
-  "author": "alienzhou",
+  "author": "raeleneqiu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alienzhou/learning-pwa/issues"
+    "url": "https://github.com/qiuruolin/learning-pwa-demo/issues"
   },
-  "homepage": "https://github.com/alienzhou/learning-pwa#readme",
+  "homepage": "https://github.com/qiuruolin/learning-pwa-demo#readme",
   "dependencies": {
     "koa": "^2.5.0",
     "koa-router": "^7.4.0",
     "koa-static": "^4.0.2",
     "nedb": "^1.8.0",
     "request": "^2.85.0"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -e $GIT_PARAMS"
-    }
   },
   "devDependencies": {
     "@commitlint/cli": "^6.1.3",
