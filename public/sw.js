@@ -67,15 +67,69 @@ self.addEventListener('fetch', function(e){
 })
 
 // 监听push事件 => 在浏览器中获取推送信息
-// 添加service worker对push的监听
+// 添加service worker对push的监听， 处理服务端推送
 self.addEventListener('push', function (e) {
     var data = e.data;
     if (e.data) {
         data = data.json();
         console.log('push的数据为：', data);
-        self.registration.showNotification(data.text);        
+        // 通过push来推送信息 =》用户关闭时仍可收到推送
+        var title = "PWA DEMO"
+        var options = {
+            body: data, //提醒的内容
+            icon: '/img/icons/book-128.png', //提醒的icon
+            actions: [ //提醒可以包含一些自定义操作
+                {
+                    action: 'show-book',
+                    title: '去看看'
+                },
+                {
+                    action: 'contact-me',
+                    title: '联系我'
+                }
+            ],
+            tag: 'pwa-demo', //相当于id
+            renotify: true //是否允许重复提醒
+        }
+
+        self.registration.showNotification(title, options);        
     } 
     else {
         console.log('push没有任何数据');
     }
 });
+
+//响应用户对于提醒框的点击事件
+self.addEventListener('notificationclick', function(e){
+    var action = e.action
+    console.log(`action tag: ${e.notification.tag}`, `action: ${action}`)
+    switch(action){
+      case 'show-book': 
+        console.log('show-book')
+        break;
+      case 'contact-me':
+        console.log('contact-me')
+        break;
+      default:
+        console.log(`未处理的action: ${e.action}`)
+        action = 'default'
+        break;
+    }
+    e.notification.close()
+    e.waitUntil(
+      self.clients.matchAll().then(function(clients){
+        if(!clients || clients.length === 0){
+          //当用户点击提醒 =》 网站关闭时会打开网站
+          self.clients.openWindow && self.clients.openWindow('http://127.0.0.1:8085')
+          return
+        }
+        //当用户点击提醒 =》 存在tab时会自动切换到网站的tab
+        clients[0].focus && clients[0].focus()
+
+        clients.forEach(element => {
+          //使用postMessage进行通信，在client(index.js)监听message事件
+          element.postMessage(action)
+        });
+      })
+    )
+})

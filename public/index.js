@@ -231,6 +231,35 @@
       var publicKey = 'BL3mk-XirK9R-nflzsyrm1XqQ-hNH2_VNCVzx4vEejKhUmpmfEVJSlt8PEff1LQSrh4fcv6alv9jJ860DA3quJY'
 
       registerServiceWorker('./sw.js').then(function(registration){
+        return Promise.all([
+            registration,
+            askPermission() //denied granted default
+        ])
+      }).then(function(result){
+        //   设置提醒内容
+        var registration = result[0]
+
+        document.querySelector('#js-notification-btn').addEventListener('click', function(){
+            var title = "PWA DEMO"
+            var options = {
+                body: '一起来使用吧', //提醒的内容
+                icon: '/img/icons/book-128.png', //提醒的icon
+                actions: [ //提醒可以包含一些自定义操作
+                    {
+                        action: 'show-book',
+                        title: '去看看'
+                    },
+                    {
+                        action: 'contact-me',
+                        title: '联系我'
+                    }
+                ],
+                tag: 'pwa-demo', //相当于id
+                renotify: true //是否允许重复提醒
+            }
+            registration.showNotification(title, options)
+        })
+
         console.log('[ServerWorker] 注册成功')
         // 开启该客户端的消息推送订阅功能
         return subscribeUserToPush(registration, publicKey)
@@ -244,6 +273,42 @@
         console.log(res)
       }).catch(function(err){
         console.log(err)
+      })
+    }
+
+    //获取提醒权限
+    function askPermission(){
+        return new Promise(function(resolve, reject){
+            // Notification对象上的静态方法Notification.requestPermission()来获取授权
+            const permissionResult = Notification.requestPermission(function(result){
+                resolve(result)
+            })
+            if(permissionResult){
+                permissionResult.then(resolve, reject)
+            }
+        }).then(function(permissionResult){
+            if(permissionResult !== 'granted'){
+                throw new Error('we weren\'t granted permission.')
+            }
+        })
+    }
+
+    //通信
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.addEventListener('message', function(e){
+        var action = e.data
+        console.log(`receive post-message from sw, action is '${e.data}'`)
+        switch(action){
+            case 'show-book':
+              location.href = 'https://book.douban.com/subject/20515024'
+              break;
+            case 'contact-me':
+              location.href = 'mailto:1312492221@qq.com'
+              break;
+            default:
+              document.querySelector('.panel').classList.add('show')
+              break;
+        }
       })
     }
 })();
