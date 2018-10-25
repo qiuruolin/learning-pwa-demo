@@ -14,6 +14,7 @@ let cacheFiles = [
     './img/loading.svg'
 ]
 
+//监听install事件，安装完成后，进行文件缓存
 self.addEventListener('install', function(e){
     console.log('[ServiceWorker] 状态： install')
     // 通过caches.open()与cache.addAll()方法将资源缓存起来
@@ -36,6 +37,7 @@ self.addEventListener('activate', function(e){
     return self.clients.claim() //更新客户端
 })
 
+//fetch事件会监听所有浏览器的请求
 self.addEventListener('fetch', function(e){
     //需要缓存的xhr请求
     const cacheRequestUrls = [
