@@ -10,42 +10,60 @@ const port = process.env.PORT || 8085;
 const app = new Koa();
 const router = new Router();
 
+/**
+ * 根据关键词获取图书信息
+ */
 router.get('/book', async (ctx, next) => {
     let query = ctx.request.query;
     let {q, fields} = query;
     let url = `https://api.douban.com/v2/book/search?q=${q}&fields=${fields}&count=10`;
-    let res = await get(url);
+    let res = await util.get(url);
     ctx.response.body = res;
 });
 
-// web-push 的相关配置
+/* ===================== */
+/* 使用web-push进行消息推送 */
+/* ===================== */
 const options = {
-    // proxy: 'http://localhost:1087' //使用Chrome需要配置代理
-}
-// const vapidKeys = webpush.generateVAPIDKeys()
-const vapidKeys = {
-    publicKey: 'BFPgNwrwUDSeEOdzFAWAWt4wSDw_wy1qS-iB0BE_Sr65sr1dIpjfZdtSjWhKqmPOnQ4MOwBKp36xeC4vicORAXs',
-    privateKey: 'wFnsSuMBJtDX8mRZrjjDy2wlSHQEMiBAkQjG7jm_ZeM'
-}
+    // proxy: 'http://localhost:1087' // 使用FCM（Chrome）需要配置代理
+};
 
+
+// const vapidKeys = webpush.generateVAPIDKeys()
+
+/**
+ * VAPID值
+ */
+const vapidKeys = {
+    publicKey: 'BL3mk-XirK9R-nflzsyrm1XqQ-hNH2_VNCVzx4vEejKhUmpmfEVJSlt8PEff1LQSrh4fcv6alv9jJ860DA3quJY',
+    privateKey: '5Yf1krEN_4wN2MOoXOd6KPmH1lX85T9UNRn4uV1MuCI'
+};
+
+// 设置web-push的VAPID值
 webpush.setVapidDetails(
     'mailto:1312492221@qq.com',
     vapidKeys.publicKey,
     vapidKeys.privateKey
-)
+);
 
-//消息订阅
-// koa-body用来处理body
+/**
+ * 提交subscription信息，并保存
+ */
 router.post('/subscription', koaBody(), async ctx => {
-    let body = ctx.request.body
-    // saveRecord存储信息
-    await util.saveRecord(body)
+    let body = ctx.request.body;
+    await util.saveRecord(body);
     ctx.response.body = {
         status: 0
-    }
-})
+    };
+});
 
-function pushMessage(subscription, data={}){
+
+/**
+ * 向push service推送信息
+ * @param {*} subscription 
+ * @param {*} data
+ */
+function pushMessage(subscription, data = {}) {
     webpush.sendNotification(subscription, data, options).then(data => {
         console.log('push service的相应数据:', JSON.stringify(data));
         return;
@@ -61,7 +79,10 @@ function pushMessage(subscription, data={}){
     })
 }
 
-// 消息推送
+/**
+ * 消息推送API，可以在管理后台进行调用
+ * 本例子中，可以直接post一个请求来查看效果
+ */
 router.post('/push', koaBody(), async ctx => {
     let {uniqueid, payload} = ctx.request.body;
     let list = uniqueid ? await util.find({uniqueid}) : await util.findAll();
@@ -76,6 +97,7 @@ router.post('/push', koaBody(), async ctx => {
         status
     };
 });
+/* ===================== */
 
 app.use(router.routes());
 app.use(serve(__dirname + '/public'));

@@ -228,7 +228,7 @@
 
     if('serviceWorker' in navigator && 'PushManager' in window){
       // 可通过web-push generate-vapid-keys生成公钥和私钥
-      var publicKey = 'BFPgNwrwUDSeEOdzFAWAWt4wSDw_wy1qS-iB0BE_Sr65sr1dIpjfZdtSjWhKqmPOnQ4MOwBKp36xeC4vicORAXs'
+      var publicKey = 'BL3mk-XirK9R-nflzsyrm1XqQ-hNH2_VNCVzx4vEejKhUmpmfEVJSlt8PEff1LQSrh4fcv6alv9jJ860DA3quJY'
 
       registerServiceWorker('./sw.js').then(function(registration){
         console.log('[ServerWorker] 注册成功')
