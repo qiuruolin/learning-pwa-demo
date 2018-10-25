@@ -226,16 +226,9 @@
         });
     }
 
-    /**
-     * 生成一个用不重复的ID
-     */
-    function GenNonDuplicateID(randomLength){
-      return Number(Math.random().toString().substr(3,randomLength) + Date.now()).toString(36)
-    }
-
     if('serviceWorker' in navigator && 'PushManager' in window){
       // 可通过web-push generate-vapid-keys生成公钥和私钥
-      var publicKey = 'BNw-bOf8E1JKr2EQtCI_tki2pyeuufvG0M-z2VnfvYy4S0ZavjDNfayxCBQQjWnd05ynd8KS1C6qLTJNxy3V6mQ'
+      var publicKey = 'BFPgNwrwUDSeEOdzFAWAWt4wSDw_wy1qS-iB0BE_Sr65sr1dIpjfZdtSjWhKqmPOnQ4MOwBKp36xeC4vicORAXs'
 
       registerServiceWorker('./sw.js').then(function(registration){
         console.log('[ServerWorker] 注册成功')
@@ -243,7 +236,7 @@
         return subscribeUserToPush(registration, publicKey)
       }).then(function(subscription){
         const body = {subscription: subscription}
-        body.uniqueid = GenNonDuplicateID()
+        body.uniqueid = new Date().getTime()
         console.log('uniqueid', body.uniqueid)
         // 将生成的客户端订阅信息存储在自己的服务器上
         return sendSubscriptionToServer(JSON.stringify(body))

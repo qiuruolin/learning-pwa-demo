@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/qiuruolin/learning-pwa-demo#readme",
   "dependencies": {
+    "https-proxy-agent": "^2.2.1",
     "koa": "^2.5.0",
     "koa-body": "^4.0.4",
     "koa-router": "^7.4.0",
