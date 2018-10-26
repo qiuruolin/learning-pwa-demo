@@ -257,6 +257,7 @@
                 tag: 'pwa-demo', //相当于id
                 renotify: true //是否允许重复提醒
             }
+            //触发提醒
             registration.showNotification(title, options)
         })
 
