@@ -87,7 +87,7 @@ self.addEventListener('push', function (e) {
                     action: 'contact-me',
                     title: '联系我'
                 }
-            ],
+            ], //et
             tag: 'pwa-demo', //相当于id
             renotify: true //是否允许重复提醒
         }
