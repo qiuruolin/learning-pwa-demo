@@ -189,10 +189,11 @@
     function subscribeUserToPush(registration, publicKey){
         var subscribeOptions = {
             userVisibleOnly: true, //推送时是否会有消息提醒
-            applicationServerKey: window.urlBase64ToUint8Array(publicKey) //客户端公钥
+            applicationServerKey: window.urlBase64ToUint8Array(publicKey) //将base64的公钥字符串转为Unit8Array
         }
         return registration.pushManager.subscribe(subscribeOptions).then(function(pushSubscription){
             console.log('Received PushSubscription: ', JSON.stringify(pushSubscription))
+            //push service会为每一个发起订阅的浏览器生成唯一的url(pushSubscription对象中的endpoint)
             return pushSubscription
         })
     }
@@ -236,6 +237,7 @@
         return subscribeUserToPush(registration, publicKey)
       }).then(function(subscription){
         const body = {subscription: subscription}
+        //为方便推送，为每个客户端简单生成一个标识
         body.uniqueid = new Date().getTime()
         console.log('uniqueid', body.uniqueid)
         // 将生成的客户端订阅信息存储在自己的服务器上

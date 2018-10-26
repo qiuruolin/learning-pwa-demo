@@ -66,7 +66,7 @@ self.addEventListener('fetch', function(e){
     }
 })
 
-// 监听push事件 => 在浏览器中获取推送信息
+// 监听push事件 => 实现Push Service向浏览器推送信息
 // 添加service worker对push的监听
 self.addEventListener('push', function (e) {
     var data = e.data;

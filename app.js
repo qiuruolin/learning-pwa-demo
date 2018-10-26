@@ -49,6 +49,7 @@ webpush.setVapidDetails(
 /**
  * 提交subscription信息，并保存
  */
+//koa-body用来处理body
 router.post('/subscription', koaBody(), async ctx => {
     let body = ctx.request.body;
     await util.saveRecord(body);
@@ -83,6 +84,7 @@ function pushMessage(subscription, data = {}) {
  * 消息推送API，可以在管理后台进行调用
  * 本例子中，可以直接post一个请求来查看效果
  */
+// 将消息推送至Push Service
 router.post('/push', koaBody(), async ctx => {
     let {uniqueid, payload} = ctx.request.body;
     let list = uniqueid ? await util.find({uniqueid}) : await util.findAll();

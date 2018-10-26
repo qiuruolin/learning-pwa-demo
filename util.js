@@ -26,6 +26,7 @@ module.exports.post = function (url, opt = {}) {
     });
 };
 
+//nedb不需要部署安装，可以将数据存储在内存中
 module.exports.saveRecord = function(obj){
     let {uniqueid, subscription} = obj
     return new Promise((resolve, reject) => {
